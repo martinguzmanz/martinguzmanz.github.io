@@ -144,7 +144,7 @@ var peso=1;
         peso = pesoRuta(rutas[x]);
         rutasPonderadas[x] = peso;
         //console.log ( "ruta:", x, "peso= ", rutasPonderadas[x] );
-        if (peso < 1.0) {
+        if (peso > 1.0) {
             var hr = new Date();
             $("ol").prepend("<li>"," Date ", hr.toLocaleString(),", Ruta= " ,rutas[x], " , valor= ",rutasPonderadas[x], "</li>");
             console.log("ARBITRAJE RUTA , ", rutas[x], ", Date ,", hr.toLocaleString() , " , valor ,",rutasPonderadas[x]);
