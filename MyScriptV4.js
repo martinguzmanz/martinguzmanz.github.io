@@ -101,7 +101,7 @@ function creaAristas(){
                 vertice[mayor].aristas = [];
             } 
             vertice[mayor].aristas.push({ siguiente_Vertice : minor ,
-                               tipoCambio : bITSOpayLoadsObj[keys[i]].asks[0].price ,
+                               tipoCambio : 1/bITSOpayLoadsObj[keys[i]].asks[0].price ,
                                bidPrice : bITSOpayLoadsObj[keys[i]].bids[0].price ,
                                askPrice : bITSOpayLoadsObj[keys[i]].asks[0].price ,
                                amount : bITSOpayLoadsObj[keys[i]].asks[0].amount
@@ -115,7 +115,7 @@ function creaAristas(){
                 vertice[minor].aristas = [];
             }
             vertice[minor].aristas.push({ siguiente_Vertice : mayor ,
-                               tipoCambio : 1/bITSOpayLoadsObj[keys[i]].bids[0].price , //?????
+                               tipoCambio : bITSOpayLoadsObj[keys[i]].bids[0].price , //?????
                                bidPrice : bITSOpayLoadsObj[keys[i]].bids[0].price ,
                                askPrice : bITSOpayLoadsObj[keys[i]].asks[0].price ,
                                amount : bITSOpayLoadsObj[keys[i]].asks[0].amount
