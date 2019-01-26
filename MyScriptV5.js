@@ -12,17 +12,7 @@ se crea un objeto con el payload de la llamada, el payload puede ser un objeto o
 
 */
 'use strict';
-/*
-    var vertice = new Object();
-    vertice.getTC = function (verticeName, target){
-        var i;
-        for (i=0 ; i<vertice[verticeName].aristas.length; i++) {
-            if (vertice[verticeName].aristas[i].siguiente_Vertice == target) {
-                return vertice[verticeName].aristas[i].tipoCambio;
-            }
-        }
-    }
-*/
+
 var orderPrefix="Order_";
 
 var bITSOpayLoadsObj = new Object();
@@ -71,18 +61,10 @@ function extraePayload ( cadena ) {
 
 function creaAristas(){
     // vertice por vertice se busca en el libro de ordenes su $ y se crea la arista
-    // con el precio ofertado (bid)
+    // con el precio ofertado. el formato es vertice.moneda-origen_moneda-destino. 
+    // puede resultar confuso, bitso define mayor_minor.
     //console.log("el objeto bITSOpayLoadsObj" , bITSOpayLoadsObj );
     //console.log("llaves bITSOpayLoadsObj", Object.keys( bITSOpayLoadsObj ) );
-//    var keys = Object.keys( vertice ); // se borran los arreglos de vertice.
-//    console.log("antes:", vertice, keys);
-    for (var i in vertice ) { //borramos las aristas de la vuelta anterior.
-        if (typeof vertice[i] != "function" && 
-            typeof vertice[i].aristas == "object")  { 
-            vertice[i].aristas.length=0;
-        }
-    }
-    // console.log("Despues: de borrar aristas", vertice);
     var keys = Object.keys( bITSOpayLoadsObj );
     var i;
     for (i =0 ; i< keys.length ; i++ ) {
@@ -96,30 +78,37 @@ function creaAristas(){
             //console.log ("mayor ",mayor," minor", minor,);
             //verficar si ya existe el vertice.
             if (typeof vertice[mayor] == "undefined") { 
-                vertice[mayor] = {};
-                vertice[mayor].verticeName = mayor;
-                vertice[mayor].aristas = [];
-            } 
-            vertice[mayor].aristas.push({ siguiente_Vertice : minor ,
-                               tipoCambio : 1/bITSOpayLoadsObj[keys[i]].asks[0].price ,
-                               bidPrice : bITSOpayLoadsObj[keys[i]].bids[0].price ,
-                               askPrice : bITSOpayLoadsObj[keys[i]].asks[0].price ,
-                               amount : bITSOpayLoadsObj[keys[i]].asks[0].amount
-                                         //evaluar mas si el amount es muy bajn...
-                                         //Price per unit of major in Minor Units
-                                         //amount en Major units
-                                        });
+                vertice[mayor] = {}; //esto crea la property.
+                vertice.verticeName = mayor;
+            }
+            
+            //console.log("creando: mayor",mayor, "minor=", minor);
+            
+            vertice[mayor][minor] =  //siguiente_Vertice :  minor
+                                    {
+                                      tipoCambio     : bITSOpayLoadsObj[keys[i]].bids[0].price,
+                                      maxAmountToGet : bITSOpayLoadsObj[keys[i]].bids[0].amount *
+                                                       bITSOpayLoadsObj[keys[i]].bids[0].price  ,
+                                      maxAmountToPay : bITSOpayLoadsObj[keys[i]].bids[0].amount ,
+                                      book_ask :bITSOpayLoadsObj[keys[i]].asks[0].price         ,
+                                      book_amount :bITSOpayLoadsObj[keys[i]].asks[0].amount
+                                      }
+            
+                                             //Price per unit of major in Minor Units
+                                         //amount en Major units, ahora en minor units
             if (typeof vertice[minor] == "undefined") { //se crea minor si no existe
                 vertice[minor] = {}; //
                 vertice[minor].verticeName = minor;
-                vertice[minor].aristas = [];
             }
-            vertice[minor].aristas.push({ siguiente_Vertice : mayor ,
-                               tipoCambio : bITSOpayLoadsObj[keys[i]].bids[0].price , //?????
-                               bidPrice : bITSOpayLoadsObj[keys[i]].bids[0].price ,
-                               askPrice : bITSOpayLoadsObj[keys[i]].asks[0].price ,
-                               amount : bITSOpayLoadsObj[keys[i]].asks[0].amount
-                                          });
+            // vertices
+            vertice[minor][mayor] = {
+                               tipoCambio     : 1/bITSOpayLoadsObj[keys[i]].asks[0].price  ,
+                               maxAmountToGet : bITSOpayLoadsObj[keys[i]].asks[0].amount ,
+                               maxAmountToPay : bITSOpayLoadsObj[keys[i]].asks[0].amount *
+                                                bITSOpayLoadsObj[keys[i]].asks[0].price  ,
+                               book_ask       : bITSOpayLoadsObj[keys[i]].asks[0].price  ,
+                               book_amount    : bITSOpayLoadsObj[keys[i]].asks[0].amount
+                              }
         }
     }
 }

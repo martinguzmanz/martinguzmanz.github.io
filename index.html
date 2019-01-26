@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
-    <script src="MyScriptV4.js"></script>    
-    <script src="grafo_defV4.js"></script>    
+    <script src="MyScriptV5.js"></script>    
+    <script src="grafo_defV5.js"></script>    
 
 <script>
 var method = "GET";
@@ -12,7 +12,8 @@ function main() {
     beep();    
     var myvar4 = setTimeout(beep(),1000);
     var myvar3 = setTimeout(beep(),1000);
-    var myVar2 = setInterval(searchBITSOForArbitrage, 30000);
+    searchBITSOForArbitrage();    
+    //var myVar2 = setInterval(searchBITSOForArbitrage, 30000);
     var myVar1 = setInterval(myTimer, 1000);
 
     $(document).ready(function() {
