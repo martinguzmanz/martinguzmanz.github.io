@@ -29,7 +29,11 @@ function generaRutas (from, verticeFinal, ruta) {
                 //            ,"stop: " , para);
             } else {
                 if (siguiente == verticeFinal) {
-                       rutas[ruta+"-"+siguiente]= ruta+"-"+siguiente;     
+                       rutas[ruta+"-"+siguiente]= {
+                           ruta                     : ruta+"-"+siguiente ,
+                           globalTC                 : 1;
+                           amountToInvestInTarget   : 0;
+                                                  };     
                        para = 100;
                        // console.log("this is a good route ",rutas[ruta]);
                 } else {
