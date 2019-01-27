@@ -48,6 +48,7 @@ var max = 1;
 var x;
 var peso=1;
     for (x in rutas) {
+        rutas[x].globalTC =1;
         peso = pesoRuta(rutas[x]);
         rutasPonderadas[x] = peso;
         //console.log ( "ruta:", x, "peso= ", rutasPonderadas[x] );
@@ -55,7 +56,7 @@ var peso=1;
         if (max>0) {
             var g_amount= 1000;
             var g_tc=1;
-            console.log( "invest , get", montoXRuta( rutas[x] , g_amount ));
+            console.log( "invest , get", montoXRuta( x, rutas[x] , g_amount ));
             max--;
         }
         
@@ -92,7 +93,7 @@ function pesoRuta( ruta ){
 }
 
 
-function montoXRuta( ruta , amountToInvest ){
+function montoXRuta( fullRuta, ruta , amountToInvest ){
     console.log("ruta:>", ruta );
     
     var pos = ruta.indexOf("-");
@@ -103,23 +104,24 @@ function montoXRuta( ruta , amountToInvest ){
     if (pos>0) { var to = tail.substr(0, pos);}    
 
     
-    if ( amountToInvest > vertice[from][to].maxAmountToPay ) {
+    if ( amountToInvest > vertice[from][to].maxAmountToPay ) { // maxAmountToPay esta en la denominacion de origen
         amountToInvest = vertice[from][to].maxAmountToPay;
     }
-
-    g_amount = amountToInvest*g_tc;
-    g_tc = g_tc * vertice[from][to].tipoCambio;
+ 
+    ruta[fullRuta].amountToInvestInTarget = amountToInvest;
+    ruta[fullRuta].globalTC  = ruta[fullRuta].globalTC * vertice[from][to].tipoCambio; // para paso a primera moneda
     
     var amountToGet    = amountToInvest * vertice[from][to].tipoCambio;
-        
-    console.log("from=",from,"to=", to, " a invertir=",amountToInvest, " para obtener ", amountToGet, " ", to, "Tipo de cambio global hasta pesos", g_tc  );
+    
+    console.log("from=",from,"to=", to, " a invertir=",amountToInvest, " para obtener ", amountToGet, " ", to, 
+                "global hasta pesos",   );
     
     if (tail.indexOf("-")<0) {
         console.log("ultimo: invest", amountToInvest ,"get:", amountToGet);
-        return [ amountToInvest , amountToGet ];
+        return [ fullRuta , amountToInvest , amountToGet ];
     } else {
         var next = tail.substr(0,pos);
         //console.log("tipo cambio: ", vertice.getTC(first,next) );
-        montoXRuta(tail, amountToGet );
+        montoXRuta(fullRuta ,tail, amountToGet );
     }
 }
