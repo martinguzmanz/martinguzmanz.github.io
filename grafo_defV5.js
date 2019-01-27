@@ -51,27 +51,29 @@ function evaluaRutas(){
 var max = 1;
 var x;
 var peso=1;
+var g_amount= 10000;
     for (x in rutas) {
         rutas[x]["globalTC"] =1;
-        peso = pesoRuta(rutas[x]);
-        rutasPonderadas[x] = peso;
+        var rutaStr =rutas[x].ruta;
+        peso = pesoRuta(rutaStr); //posiblemente ya no se necesite?
+        rutasPonderadas[x] = peso; //posiblemente ya no se necesite?
         //console.log ( "ruta:", x, "peso= ", rutasPonderadas[x] );
         
         if (max>0) {
-            var g_amount= 1000;
-            var g_tc=1;
-            console.log( "invest , get", montoXRuta( x, rutas[x] , g_amount ));
+            montoXRuta( x, rutaStr , g_amount );
+            var hr = new Date();
+            $("ol").prepend("<li>","TEST Date: ", hr.toLocaleString() ,"Max=", max,
+                            ", TEST Ruta= " ,rutas[x], 
+                            ", valor a invertir= ",rutas[x].amountToInvestInTarget/rutas[x].globalTC, "</li>");
             max--;
         }
         
         if (peso > 1.0) {
             var hr = new Date();
+            montoXRuta( x, rutaStr , g_amount );
             $("ol").prepend("<li>"," Date ", hr.toLocaleString(),
                             ", Ruta= " ,rutas[x], 
-                            ", valor= ",rutasPonderadas[x], "</li>");
-            console.log("ARBITRAJE RUTA , ", rutas[x], ", Date ,", 
-                hr.toLocaleString() , " , valor ,",rutasPonderadas[x]);
-            console.log( "invest , get", montoXRuta( rutas[x] , 10000 ));
+                            ", valor a invertir= ",rutas[x].amountToInvestInTarget/rutas[x].globalTC, "</li>");
             beep();
             var myvar4 = setTimeout(beep(),1000);
             var myvar3 = setTimeout(beep(),1000);
@@ -79,11 +81,11 @@ var peso=1;
     }
 }
 
-function pesoRuta( ruta ){
-//    console.log("ruta:>", ruta );
-    var pos = ruta.indexOf("-");
-    var first = ruta.substr(0, pos);
-    var tail = ruta.slice(pos+1);
+function pesoRuta( rutaStr ){
+    //console.log("ruta:>", rutaStr );
+    var pos = rutaStr.indexOf("-");
+    var first = rutaStr.substr(0, pos);
+    var tail = rutaStr.slice(pos+1);
     pos = tail.indexOf("-");
     if (pos<0) {
         //console.log("ultimo: tail=", tail,"first:", first,
@@ -97,12 +99,12 @@ function pesoRuta( ruta ){
 }
 
 
-function montoXRuta( fullRuta, ruta , amountToInvest ){
-    console.log("ruta:>", ruta );
+function montoXRuta( fullRuta, rutaStr , amountToInvest ){
+    console.log("monto ruta:>", rutaStr );
     
-    var pos = ruta.indexOf("-");
-    var from = ruta.substr(0, pos);
-    var tail = ruta.slice(pos+1);
+    var pos = rutaStr.indexOf("-");
+    var from = rutaStr.substr(0, pos);
+    var tail = rutaStr.slice(pos+1);
         pos = tail.indexOf("-");
     to = tail;
     if (pos>0) { var to = tail.substr(0, pos);}    
@@ -112,20 +114,18 @@ function montoXRuta( fullRuta, ruta , amountToInvest ){
         amountToInvest = vertice[from][to].maxAmountToPay;
     }
  
-    ruta[fullRuta].amountToInvestInTarget = amountToInvest;
-    ruta[fullRuta].globalTC  = ruta[fullRuta].globalTC * vertice[from][to].tipoCambio; // para paso a primera moneda
+    rutas[fullRuta].amountToInvestInTarget = amountToInvest;
+    rutas[fullRuta].globalTC  = rutas[fullRuta].globalTC * vertice[from][to].tipoCambio; // para paso a primera moneda
     
     var amountToGet    = amountToInvest * vertice[from][to].tipoCambio;
     
-    console.log("from=",from,"to=", to, " a invertir=",amountToInvest, " para obtener ", amountToGet, " ", to, 
-                "global hasta pesos",   );
+    console.log("from=",from,"to ", to, " a invertir=",amountToInvest, " para obtener ", amountToGet, " ", to, 
+                "tc global hasta pesos =",  rutas[fullRuta].globalTC );
     
     if (tail.indexOf("-")<0) {
-        console.log("ultimo: invest", amountToInvest ,"get:", amountToGet);
-        return [ fullRuta , amountToInvest , amountToGet ];
+        console.log("ultimo: invest", amountToGet / rutas[fullRuta].globalTC  ,"get:", amountToGet );
+        return;
     } else {
-        var next = tail.substr(0,pos);
-        //console.log("tipo cambio: ", vertice.getTC(first,next) );
         montoXRuta(fullRuta ,tail, amountToGet );
     }
 }
