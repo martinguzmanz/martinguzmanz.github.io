@@ -48,7 +48,7 @@ var max = 1;
 var x;
 var peso=1;
     for (x in rutas) {
-        rutas[x].globalTC =1;
+        rutas[x]["globalTC"] =1;
         peso = pesoRuta(rutas[x]);
         rutasPonderadas[x] = peso;
         //console.log ( "ruta:", x, "peso= ", rutasPonderadas[x] );
