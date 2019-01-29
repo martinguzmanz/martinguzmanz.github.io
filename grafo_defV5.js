@@ -48,32 +48,22 @@ function generaRutas (from, verticeFinal, ruta) {
 
 
 function evaluaRutas(){
-var max = 1;
 var x;
 var peso=1;
-var g_amount= 10000;
+var investAmount= 10000;
+var investReturn=0;
+var hr = new Date();
+
     for (x in rutas) {
         rutas[x]["globalTC"] =1;
         var rutaStr =rutas[x].ruta;
-        peso = pesoRuta(rutaStr); //posiblemente ya no se necesite?
+        peso = pesoRuta(rutaStr);
         rutasPonderadas[x] = peso; //posiblemente ya no se necesite?
-        //console.log ( "ruta:", x, "peso= ", rutasPonderadas[x] );
-        
-        if (max>0) {
-            montoXRuta( x, rutaStr , g_amount );
-            var hr = new Date();
-            $("ol").prepend("<li>","TEST Date: ", hr.toLocaleString() ,"Max=", max,
-                            ", TEST Ruta= " ,rutas[x], 
-                            ", valor a invertir= ",rutas[x].amountToInvestInTarget/rutas[x].globalTC, "</li>");
-            max--;
-        }
-        
+
+//        investReturn= montoXRuta( x, rutaStr , investAmount );
+                
         if (peso > 1.0) {
-            var hr = new Date();
-            montoXRuta( x, rutaStr , g_amount );
-            $("ol").prepend("<li>"," Date ", hr.toLocaleString(),
-                            ", Ruta= " ,rutas[x], 
-                            ", valor a invertir= ",rutas[x].amountToInvestInTarget/rutas[x].globalTC, "</li>");
+            investReturn= montoXRuta( x, rutaStr , investAmount );
             beep();
             var myvar4 = setTimeout(beep(),1000);
             var myvar3 = setTimeout(beep(),1000);
@@ -107,10 +97,9 @@ function montoXRuta( fullRuta, rutaStr , amountToInvest ){
     var tail = rutaStr.slice(pos+1);
         pos = tail.indexOf("-");
     to = tail;
-    if (pos>0) { var to = tail.substr(0, pos);}    
-
+    if (pos>0) { var to = tail.substr(0, pos);}
     
-    if ( amountToInvest > vertice[from][to].maxAmountToPay ) { // maxAmountToPay esta en la denominacion de origen
+    if ( amountToInvest > vertice[from][to].maxAmountToPay ) { // maxAmountToPay denominacion de origen
         amountToInvest = vertice[from][to].maxAmountToPay;
     }
  
@@ -124,8 +113,17 @@ function montoXRuta( fullRuta, rutaStr , amountToInvest ){
     
     if (tail.indexOf("-")<0) {
         console.log("ultimo: invest", amountToGet / rutas[fullRuta].globalTC  ,"get:", amountToGet );
-        return;
+        if (rutas[fullRuta].globalTC>1) {
+            var hr = new Date();
+            $("ol").prepend("<li>","Date: ", hr.toLocaleString() ,
+                            ", Ruta= " ,fullRuta, 
+                            ", Invierte= ",amountToGet / rutas[fullRuta].globalTC,
+                            ", Obtiene = ",amountToGet,
+                            "</li>");
+        }
+
+        return amountToGet;
     } else {
-        montoXRuta(fullRuta ,tail, amountToGet );
+        var tmp= montoXRuta(fullRuta ,tail, amountToGet );
     }
 }
