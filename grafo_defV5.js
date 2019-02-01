@@ -119,6 +119,7 @@ function montoXRuta( fullRuta, rutaStr , amountToInvest ){
                             ", Ruta= " ,fullRuta, 
                             ", Invierte= ",amountToGet / rutas[fullRuta].globalTC,
                             ", Obtiene = ",amountToGet,
+                            ", TASA =", rutas[fullRuta].globalTC,
                             "</li>");
         }
 
